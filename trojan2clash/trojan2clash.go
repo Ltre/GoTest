@@ -177,7 +177,7 @@ proxies:
 		fmt.Fprintf(file, "    skip-cert-verify: %v\n", verifyCert)
 
 		// Add the 'server' value to the 'proxies' array.
-		proxies = append(proxies, server)
+		proxies = append(proxies, remarks)
 	}
 
 	fmt.Fprintf(file, 
@@ -400,7 +400,7 @@ proxies:
 - DOMAIN-KEYWORD,umeng,REJECT
 - DOMAIN-KEYWORD,usage,REJECT
 - DOMAIN-KEYWORD,wlmonitor,REJECT
-  - DOMAIN-SUFFIX,webogram,REJECT
+- DOMAIN-SUFFIX,webogram,REJECT
 - DOMAIN-KEYWORD,zjtoolbar,REJECT
 - DOMAIN-SUFFIX,9to5mac.com,Proxy
 - DOMAIN-SUFFIX,abpchina.org,Proxy
