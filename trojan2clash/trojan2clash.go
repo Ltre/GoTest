@@ -1,49 +1,49 @@
 package main
 
 /**
-	golang读取gui-config.json文件，暂存到变量data。
-	设定变量proxies(字符串数组类型)。
-	获取 data下的名为config的数组，遍历之。在遍历过程中，获取每个元素下的 server、server_port、password、remarks、verify_certificate属性（除了verify_certificate是boolean属性，其它的都是字符串属性）。将server值塞进proxies数组。用server、server_port、password、remarks、verify_certificate属性值拼接以下字符串（含换行符和空格，以分割线”=====“为界，但不要包含分割线”=====“）：
-	=====
-	  -
-	    name: remarks属性值
-	    type: trojan
-	    server: server属性值
-	    port: server_port属性值
-	    password: password属性值
-	    alpn:
-	      - h2
-	      - http/1.1
-	    skip-cert-verify: verify_certificate属性值（填true或false）
-	=====
+golang读取gui-config.json文件，暂存到变量data。
+设定变量proxies(字符串数组类型)。
+获取 data下的名为config的数组，遍历之。在遍历过程中，获取每个元素下的 server、server_port、password、remarks、verify_certificate属性（除了verify_certificate是boolean属性，其它的都是字符串属性）。将server值塞进proxies数组。用server、server_port、password、remarks、verify_certificate属性值拼接以下字符串（含换行符和空格，以分割线”=====“为界，但不要包含分割线”=====“）：
+=====
+  -
+    name: remarks属性值
+    type: trojan
+    server: server属性值
+    port: server_port属性值
+    password: password属性值
+    alpn:
+      - h2
+      - http/1.1
+    skip-cert-verify: verify_certificate属性值（填true或false）
+=====
 
 
-	在以上循环结束后，遍历proxies变量，每次循环以以下字符串拼接（，以分割线”=====“为界，但不要包含分割线”=====“）：
-	=====
-	  - proxies数组元素的值
-	=====	
-	Read gui-config.json file in Go and store it in the 'data' variable.
-	Define a variable 'proxies' (string array type).
-	Retrieve the 'config' array under the 'data' object and iterate through it.
-	During the iteration, extract the 'server', 'server_port', 'password', 'remarks', and 'verify_certificate' properties (except 'verify_certificate', which is a boolean property).
-	Add the 'server' value to the 'proxies' array.
-	Concatenate the following string using the extracted properties (including line breaks and spaces, with the separator "=====" but excluding the actual separator):
-	=====
-	  -
-	    name: remarks property value
-	    type: trojan
-	    server: server property value
-	    port: server_port property value
-	    password: password property value
-	    alpn:
-	      - h2
-	      - http/1.1
-	    skip-cert-verify: verify_certificate property value (true or false)
-	=====
-	After the loop ends, iterate through the 'proxies' variable and concatenate the following string for each element (with the separator "=====" but excluding the actual separator):
-	=====
-	  - value of the proxies array element
-	=====
+在以上循环结束后，遍历proxies变量，每次循环以以下字符串拼接（，以分割线”=====“为界，但不要包含分割线”=====“）：
+=====
+  - proxies数组元素的值
+=====
+Read gui-config.json file in Go and store it in the 'data' variable.
+Define a variable 'proxies' (string array type).
+Retrieve the 'config' array under the 'data' object and iterate through it.
+During the iteration, extract the 'server', 'server_port', 'password', 'remarks', and 'verify_certificate' properties (except 'verify_certificate', which is a boolean property).
+Add the 'server' value to the 'proxies' array.
+Concatenate the following string using the extracted properties (including line breaks and spaces, with the separator "=====" but excluding the actual separator):
+=====
+  -
+    name: remarks property value
+    type: trojan
+    server: server property value
+    port: server_port property value
+    password: password property value
+    alpn:
+      - h2
+      - http/1.1
+    skip-cert-verify: verify_certificate property value (true or false)
+=====
+After the loop ends, iterate through the 'proxies' variable and concatenate the following string for each element (with the separator "=====" but excluding the actual separator):
+=====
+  - value of the proxies array element
+=====
 */
 
 import (
@@ -56,8 +56,7 @@ import (
 
 func main() {
 	// Read gui-config.json file and store it in the 'data' variable.
-    filePath := "gui-config.json"
-	data, err := ioutil.ReadFile(filePath)
+	data, err := ioutil.ReadFile("gui-config.json")
 	if err != nil {
 		log.Fatal("Error reading gui-config.json:", err)
 	}
@@ -84,9 +83,9 @@ func main() {
 	}
 	defer file.Close() // Close the file when done
 
-    os.Truncate(filePath, 0)
-	fmt.Fprintf(file, 
-`port: 7890
+	os.Truncate("clash.txt", 0)
+	fmt.Fprintf(file,
+		`port: 7890
 socks-port: 7891
 allow-lan: false
 mode: Rule
@@ -163,6 +162,7 @@ proxies:
 			log.Println("Invalid format: skipping config item without 'verify_certificate'.")
 			continue
 		}
+		skipVerifyCert := !verifyCert
 
 		// Write the required string to the file
 		fmt.Fprintf(file, "  -\n")
@@ -174,14 +174,14 @@ proxies:
 		fmt.Fprintf(file, "    alpn:\n")
 		fmt.Fprintf(file, "      - h2\n")
 		fmt.Fprintf(file, "      - http/1.1\n")
-		fmt.Fprintf(file, "    skip-cert-verify: %v\n", verifyCert)
+		fmt.Fprintf(file, "    skip-cert-verify: %v\n", skipVerifyCert)
 
 		// Add the 'server' value to the 'proxies' array.
 		proxies = append(proxies, remarks)
 	}
 
-	fmt.Fprintf(file, 
-`proxy-groups:
+	fmt.Fprintf(file,
+		`proxy-groups:
   - 
     name: Auto
     type: url-test
@@ -195,8 +195,8 @@ proxies:
 		fmt.Fprintf(file, "      - %s\n", proxy)
 	}
 
-	fmt.Fprintf(file, 
-`  - 
+	fmt.Fprintf(file,
+		`  - 
     name: Proxy
     type: select
     proxies:
@@ -208,8 +208,8 @@ proxies:
 		fmt.Fprintf(file, "      - %s\n", proxy)
 	}
 
-	fmt.Fprintf(file, 
-`rules:
+	fmt.Fprintf(file,
+		`rules:
 - DOMAIN-SUFFIX,ghcr.io,Proxy
 - DOMAIN-SUFFIX,googleapis.cn,Proxy
 - DOMAIN-KEYWORD,googleapis.cn,Proxy
