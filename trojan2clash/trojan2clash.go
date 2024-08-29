@@ -1,6 +1,10 @@
 package main
 
 /**
+ * 此处已不维护，转移至Ltre.sh/network/trojanQtConf2AndroidClashPremium
+ */
+
+/**
 golang读取gui-config.json文件，暂存到变量data。
 设定变量proxies(字符串数组类型)。
 获取 data下的名为config的数组，遍历之。在遍历过程中，获取每个元素下的 server、server_port、password、remarks、verify_certificate属性（除了verify_certificate是boolean属性，其它的都是字符串属性）。将server值塞进proxies数组。用server、server_port、password、remarks、verify_certificate属性值拼接以下字符串（含换行符和空格，以分割线”=====“为界，但不要包含分割线”=====“）：
